@@ -27,8 +27,10 @@ module.exports = {
         });
         config.resolve.alias // 添加别名
             .set('@', resolve('src'))
+            .set('@api', resolve('src/api'))
             .set('@assets', resolve('src/assets'))
-            .set('@components', resolve('src/components'))
+            .set('@comp', resolve('src/components'))
+            .set('@layout', resolve('src/layout'))
             .set('@router', resolve('src/router'))
             .set('@views', resolve('src/views'))
             .set('@store', resolve('src/store'))

@@ -4,12 +4,28 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+/* Layout */
+import Layout from '@layout'
+
 const routes = [
   {
-    path: "/",
+    path: "/login",
     name: "Home",
     component: () =>
       import(/* webpackChunkName: "about" */ "@views/login/index.vue")
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@views/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+      }
+    ]
   }
 ];
 

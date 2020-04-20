@@ -1,6 +1,6 @@
 import Vue from "vue";
 
-// import Cookies from 'js-cookie'
+import Cookies from 'js-cookie'
 
 // 导入elementUI的js包
 import Element from 'element-ui';
@@ -18,6 +18,9 @@ Vue.use(Element, {
 import App from "./App";
 import router from "./router";
 import store from "./store";
+
+import '@assets/icons' // icon
+import './permission' // permission control
 
 Vue.config.productionTip = false;
 

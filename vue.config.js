@@ -29,7 +29,7 @@ module.exports = {
             .set('@', resolve('src'))
             .set('@api', resolve('src/api'))
             .set('@assets', resolve('src/assets'))
-            .set('@style', resolve('src/assets/style'))
+            .set('@styles', resolve('src/assets/styles'))
             .set('@fonts', resolve('src/assets/fonts'))
             .set('@comp', resolve('src/components'))
             .set('@layout', resolve('src/layout'))

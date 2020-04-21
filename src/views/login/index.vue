@@ -4,14 +4,14 @@
 			<h2>欢迎回来</h2>
 			<label>
 				<span>用户名</span>
-				<input type="text" v-model="form.username" />
+				<input type="text" v-model="loginForm.username" />
 			</label>
 			<label>
 				<span>密码</span>
-				<input type="password" v-model="form.password" />
+				<input type="password" v-model="loginForm.password" />
 			</label>
 			<p class="forgot-pass"><a href="javascript:">忘记密码？</a></p>
-			<button type="button" class="submit">登 录</button>
+			<button type="button" class="submit" @click="login()">登 录</button>
 		</div>
 		<div class="sub-cont">
 			<div class="img">
@@ -25,24 +25,24 @@
 				</div>
 				<div class="img__btn" @click="change()">
 					<span class="m--up" @click="regist()">注 册</span>
-					<span class="m--in" @click="login()">登 录</span>
+					<span class="m--in" @click="handleLogin()">登 录</span>
 				</div>
 			</div>
 			<div class="form sign-up">
 				<h2>立即注册</h2>
 				<label>
 					<span>用户名</span>
-					<input type="text" v-model="regist.username" />
+					<input type="text" v-model="registForm.username" />
 				</label>
 				<label>
 					<span>邮箱</span>
-					<input type="email" v-model="regist.email" />
+					<input type="email" v-model="registForm.email" />
 				</label>
 				<label>
 					<span>密码</span>
-					<input type="password" v-model="regist.password" />
+					<input type="password" v-model="registForm.password" />
 				</label>
-				<button type="button" class="submit">注 册</button>
+				<button type="button" class="submit" @click="handleLogin">注 册</button>
 			</div>
 		</div>
 	</div>
@@ -52,38 +52,111 @@
 export default {
 	name: 'Login',
 	data() {
-		return {
-			form: {
-				username: '',
-				password: ''
-			},
-			regist: {
-				username: '',
-				email: '',
-				password: ''
-			},
-			// 表单验证，需要在 el-form-item 元素中增加 prop 属性
-			rules: {
-				username: [{ required: true, message: '账号不可为空', trigger: 'blur' }],
-				password: [{ required: true, message: '密码不可为空', trigger: 'blur' }]
+		const validateUsername = (rule, value, callback) => {
+			if (!validUsername(value)) {
+				callback(new Error('Please enter the correct user name'));
+			} else {
+				callback();
 			}
 		};
+		const validatePassword = (rule, value, callback) => {
+			if (value.length < 6) {
+				callback(new Error('The password can not be less than 6 digits'));
+			} else {
+				callback();
+			}
+		};
+		return {
+			loginForm: {
+				username: 'admin',
+				password: '111111'
+			},
+			registForm: {
+				username: 'admin',
+				email: '121776554@qq.com',
+				password: '111111'
+			},
+			loginRules: {
+				username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+				password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+			},
+			passwordType: 'password',
+			capsTooltip: false,
+			loading: false,
+			showDialog: false,
+			redirect: undefined,
+			otherQuery: {}
+		};
+	},
+	watch: {
+		$route: {
+			handler: function(route) {
+				const query = route.query;
+				if (query) {
+					this.redirect = query.redirect;
+					this.otherQuery = this.getOtherQuery(query);
+				}
+			},
+			immediate: true
+		}
+	},
+	created() {
+		// window.addEventListener('storage', this.afterQRScan)
+	},
+	mounted() {
+		if (this.loginForm.username === '') {
+			this.$refs.username.focus();
+		} else if (this.loginForm.password === '') {
+			this.$refs.password.focus();
+		}
+	},
+	destroyed() {
+		// window.removeEventListener('storage', this.afterQRScan)
 	},
 	methods: {
-		change() {
-			document.querySelector('.content').classList.toggle('s--signup');
+		login(){
+			alert(123123);
 		},
-		onSubmit(formName) {
-			// 为表单绑定验证功能
-			this.$refs[formName].validate(valid => {
+		checkCapslock(e) {
+			const { key } = e;
+			this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z');
+		},
+		showPwd() {
+			if (this.passwordType === 'password') {
+				this.passwordType = '';
+			} else {
+				this.passwordType = 'password';
+			}
+			this.$nextTick(() => {
+				this.$refs.password.focus();
+			});
+		},
+		handleLogin() {
+			this.$refs.loginForm.validate(valid => {
 				if (valid) {
-					// 使用 vue-router 路由到指定页面，该方式称之为编程式导航
-					this.$router.push('/main');
+					this.loading = true;
+					this.$store
+						.dispatch('user/login', this.loginForm)
+						.then(() => {
+							this.$router.push({ path: this.redirect || '/', query: this.otherQuery });
+							this.loading = false;
+						})
+						.catch(() => {
+							this.loading = false;
+						});
 				} else {
-					this.dialogVisible = true;
+					console.log('error submit!!');
 					return false;
 				}
 			});
+		},
+		getOtherQuery(query) {
+			return Object.keys(query).reduce((acc, cur) => {
+				if (cur !== 'redirect') {
+					acc[cur] = query[cur];
+				}
+				return acc;
+			}, {});
 		}
 	}
 };

@@ -29,6 +29,8 @@ module.exports = {
             .set('@', resolve('src'))
             .set('@api', resolve('src/api'))
             .set('@assets', resolve('src/assets'))
+            .set('@style', resolve('src/assets/style'))
+            .set('@fonts', resolve('src/assets/fonts'))
             .set('@comp', resolve('src/components'))
             .set('@layout', resolve('src/layout'))
             .set('@router', resolve('src/router'))
